@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:kosfinder/models/kos.dart';
 import 'package:kosfinder/providers/kos_provider.dart';
 import 'package:kosfinder/screens/about_screen.dart';
+import 'package:kosfinder/screens/kos_detail_screen.dart';
 import 'package:kosfinder/theme/app_theme.dart';
 import 'package:kosfinder/widgets/kos_card.dart';
 import 'package:provider/provider.dart';
@@ -199,9 +200,18 @@ class _KosListScreenState extends State<KosListScreen> {
         for (var i = 0; i < items.length; i++) ...[
           KosCard(
             kos: items[i],
-            onTap: widget.onKosTap == null
-                ? null
-                : () => widget.onKosTap!(items[i]),
+            onTap: () {
+              final customTap = widget.onKosTap;
+              if (customTap != null) {
+                customTap(items[i]);
+                return;
+              }
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => KosDetailScreen(kos: items[i]),
+                ),
+              );
+            },
           ),
           if (i < items.length - 1) const SizedBox(height: 14),
         ],
