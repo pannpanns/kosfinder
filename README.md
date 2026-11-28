@@ -1,17 +1,35 @@
-# kosfinder
+# KosFinder
 
-A new Flutter project.
+Aplikasi Android berbasis **Flutter** dan **Supabase** untuk mempertemukan pencari kos (tanpa login) dengan pemilik kos (dengan login sederhana).
 
-## Getting Started
+## Cara Menjalankan
 
-This project is a starting point for a Flutter application.
+Konfigurasi Supabase **tidak ditulis di dalam kode** dan tidak disimpan di file `.env` pada repository. Jalankan aplikasi dari terminal Anda dengan mengisi `SUPABASE_URL` dan `SUPABASE_ANON_KEY` asli melalui `--dart-define`:
 
-A few resources to get you started if this is your first Flutter project:
+```bash
+flutter run \
+  --dart-define=SUPABASE_URL=https://contoh-proyek.supabase.co \
+  --dart-define=SUPABASE_ANON_KEY=contoh_anon_key_palsu
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Di Windows PowerShell (satu baris):
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```powershell
+flutter run --dart-define=SUPABASE_URL=https://contoh-proyek.supabase.co --dart-define=SUPABASE_ANON_KEY=contoh_anon_key_palsu
+```
+
+> **Keamanan:** Gunakan hanya **anon / publishable key**. Jangan pernah menaruh `service_role` key atau kredensial asli di dalam kode, chat, maupun riwayat commit.
+
+## Pengujian Lokal
+
+```bash
+flutter analyze
+flutter test
+```
+
+## Dokumen Proyek
+- `docs/input/ide.md` — Ide awal
+- `docs/PRD.md` — Kebutuhan produk, user story, dan acceptance criteria
+- `docs/ARCHITECTURE.md` — Arsitektur aplikasi dan skema database
+- `docs/TASKS.md` — Daftar task per vertical slice
+- `supabase/migrations/001_init.sql` — Skema tabel `public.kos` dan policy RLS
