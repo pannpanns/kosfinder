@@ -155,7 +155,7 @@ void main() {
       await tester.tap(find.text('Kos Saya'));
       await tester.pumpAndSettle();
       expect(
-        find.text('Fitur masuk pemilik dan pengelolaan Kos Saya akan hadir pada Slice 3 (T08).'),
+        find.text('Selamat datang,\npemilik kos'),
         findsOneWidget,
       );
 
@@ -169,7 +169,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Fitur masuk pemilik dan pengelolaan Kos Saya akan hadir pada Slice 3 (T08).'),
+        find.text('Selamat datang,\npemilik kos'),
         findsOneWidget,
       );
     });

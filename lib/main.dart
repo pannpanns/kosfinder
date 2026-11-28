@@ -1,9 +1,11 @@
-import 'package:material_ui/material_ui.dart';
 import 'package:kosfinder/config/supabase_config.dart';
+import 'package:kosfinder/providers/auth_provider.dart';
 import 'package:kosfinder/providers/kos_provider.dart';
+import 'package:kosfinder/repositories/auth_repository.dart';
 import 'package:kosfinder/repositories/kos_repository.dart';
 import 'package:kosfinder/screens/home_shell_screen.dart';
 import 'package:kosfinder/theme/app_theme.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -23,10 +25,12 @@ class KosFinderApp extends StatelessWidget {
   const KosFinderApp({
     super.key,
     this.kosRepository,
+    this.authRepository,
     this.configError,
   });
 
   final KosRepository? kosRepository;
+  final AuthRepository? authRepository;
   final String? configError;
 
   @override
@@ -44,6 +48,9 @@ class KosFinderApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<KosProvider>(
           create: (_) => KosProvider(repository: kosRepository),
+        ),
+        ChangeNotifierProvider<AuthProvider>(
+          create: (_) => AuthProvider(repository: authRepository),
         ),
       ],
       child: MaterialApp(

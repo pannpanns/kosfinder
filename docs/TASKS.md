@@ -23,7 +23,7 @@ Status: `TODO` | `IN_PROGRESS` | `DONE`
 | ID | Tujuan | Story & AC | File yang Boleh Diubah | Cara Menguji | Status |
 |---|---|---|---|---|---|
 | T07 | Buat `AuthRepository` dan `AuthProvider` (daftar, masuk, keluar, sesi persisten, error bahasa Indonesia) | US03-AC1, US03-AC2, US03-AC3, US03-AC4, US03-AC6 | `lib/repositories/auth_repository.dart`, `lib/providers/auth_provider.dart`, `test/auth_provider_test.dart` | Unit test validasi email/password min 6 karakter & pemetaan error (`Email ini sudah terdaftar. Silakan masuk.`) | DONE |
-| T08 | Buat layar Masuk/Daftar (`AuthScreen`), hubungkan tab `Kos Saya`, tombol lihat password, dan catatan lupa password | US03-AC1, US03-AC2, US03-AC3, US03-AC4, US03-AC5, US03-AC6, US03-AC7 | `lib/screens/auth_screen.dart`, `lib/screens/my_kos_screen.dart`, `lib/screens/home_shell_screen.dart`, `lib/main.dart`, `test/auth_screen_test.dart` | Widget test form & catatan lupa password; uji di emulator: daftar, keluar, masuk, tutup & buka ulang tetap login, `Cari Kos` tetap jalan tanpa login | TODO |
+| T08 | Buat layar Masuk/Daftar (`AuthScreen`), hubungkan tab `Kos Saya`, tombol lihat password, dan catatan lupa password | US03-AC1, US03-AC2, US03-AC3, US03-AC4, US03-AC5, US03-AC6, US03-AC7 | `lib/screens/auth_screen.dart`, `lib/screens/my_kos_screen.dart`, `lib/screens/home_shell_screen.dart`, `lib/main.dart`, `test/auth_screen_test.dart` | Widget test form & catatan lupa password; uji di emulator: daftar, keluar, masuk, tutup & buka ulang tetap login, `Cari Kos` tetap jalan tanpa login | DONE |
 
 ## Slice 4 — Tambah, Ubah, Hapus Kos Milik Sendiri [Wajib]
 | ID | Tujuan | Story & AC | File yang Boleh Diubah | Cara Menguji | Status |

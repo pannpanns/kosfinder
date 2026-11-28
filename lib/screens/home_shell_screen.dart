@@ -1,7 +1,10 @@
-import 'package:material_ui/material_ui.dart';
-import 'package:kosfinder/screens/about_screen.dart';
+import 'package:kosfinder/providers/auth_provider.dart';
+import 'package:kosfinder/screens/auth_screen.dart';
 import 'package:kosfinder/screens/kos_list_screen.dart';
+import 'package:kosfinder/screens/my_kos_screen.dart';
 import 'package:kosfinder/theme/app_theme.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:provider/provider.dart';
 
 class HomeShellScreen extends StatefulWidget {
   const HomeShellScreen({
@@ -20,9 +23,17 @@ class _HomeShellScreenState extends State<HomeShellScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final kosSayaWidget =
+        widget.kosSayaTab ??
+        Consumer<AuthProvider>(
+          builder: (context, auth, _) {
+            return auth.isLoggedIn ? const MyKosScreen() : const AuthScreen();
+          },
+        );
+
     final tabs = [
       const KosListScreen(),
-      widget.kosSayaTab ?? const _KosSayaPlaceholder(),
+      kosSayaWidget,
     ];
 
     return Scaffold(
@@ -134,57 +145,6 @@ class _NavTabButton extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// TODO(T08): ganti placeholder ini dengan AuthScreen dan MyKosScreen pada Slice 3.
-class _KosSayaPlaceholder extends StatelessWidget {
-  const _KosSayaPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 116),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Kos Saya', style: AppTextStyles.screenTitle),
-                CircleIconButton(
-                  icon: Icons.info_outline,
-                  semanticLabel: 'Tentang',
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => const AboutScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: AppShadows.card,
-              ),
-              child: const Text(
-                'Fitur masuk pemilik dan pengelolaan Kos Saya akan hadir pada Slice 3 (T08).',
-                style: AppTextStyles.body,
-              ),
-            ),
-          ],
         ),
       ),
     );
