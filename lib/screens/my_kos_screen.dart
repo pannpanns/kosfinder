@@ -2,6 +2,7 @@ import 'package:kosfinder/models/kos.dart';
 import 'package:kosfinder/providers/auth_provider.dart';
 import 'package:kosfinder/providers/kos_provider.dart';
 import 'package:kosfinder/providers/owner_kos_provider.dart';
+import 'package:kosfinder/screens/kos_form_screen.dart';
 import 'package:kosfinder/theme/app_theme.dart';
 import 'package:kosfinder/widgets/kos_card.dart';
 import 'package:material_ui/material_ui.dart';
@@ -198,7 +199,13 @@ class _MyKosScreenState extends State<MyKosScreen> {
                       final handler = widget.onAddTap;
                       if (handler != null) {
                         handler();
+                        return;
                       }
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const KosFormScreen(),
+                        ),
+                      );
                     },
               icon: const Icon(Icons.add, size: 22),
               label: const Text('Tambah Kos'),
@@ -280,7 +287,13 @@ class _MyKosScreenState extends State<MyKosScreen> {
                         final handler = widget.onEditTap;
                         if (handler != null) {
                           handler(kos);
+                          return;
                         }
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => KosFormScreen(existingKos: kos),
+                          ),
+                        );
                       },
                 icon: const Icon(Icons.edit_outlined, size: 18),
                 label: const Text('Ubah'),
