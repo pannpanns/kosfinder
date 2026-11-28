@@ -17,7 +17,7 @@ Status: `TODO` | `IN_PROGRESS` | `DONE`
 | ID | Tujuan | Story & AC | File yang Boleh Diubah | Cara Menguji | Status |
 |---|---|---|---|---|---|
 | T05 | Tambah logika cari area (*contains case-insensitive*) serta filter harga maks & multi-fasilitas (AND) | US02-AC1, US02-AC2, US02-AC3 | `lib/utils/kos_validator.dart`, `lib/providers/kos_provider.dart`, `test/kos_filter_test.dart` | Unit test `"singaraja"` == `"Singaraja"` == `"singar"`, harga `<= 2.000.000`, dan filter `WiFi` + `AC` (harus punya keduanya) | DONE |
-| T06 | Tambah UI bilah cari area, filter harga maks, ceklis fasilitas (`AC`, `WiFi`, `Kamar Mandi Dalam`, `Parkir`), pesan kosong & reset filter | US02-AC1, US02-AC2, US02-AC3, US02-AC4 | `lib/screens/kos_list_screen.dart`, `test/kos_list_filter_widget_test.dart` | Widget test hasil kosong & tombol reset; uji di emulator: cari `"singaraja"` vs `"Singaraja"`, maks Rp2.000.000, hasil kosong tampil pesan | TODO |
+| T06 | Tambah UI bilah cari area, filter harga maks, ceklis fasilitas (`AC`, `WiFi`, `Kamar Mandi Dalam`, `Parkir`), pesan kosong & reset filter | US02-AC1, US02-AC2, US02-AC3, US02-AC4 | `lib/screens/kos_list_screen.dart`, `test/kos_list_filter_widget_test.dart` | Widget test hasil kosong & tombol reset; uji di emulator: cari `"singaraja"` vs `"Singaraja"`, maks Rp2.000.000, hasil kosong tampil pesan | DONE |
 
 ## Slice 3 — Login Pemilik [Wajib]
 | ID | Tujuan | Story & AC | File yang Boleh Diubah | Cara Menguji | Status |
