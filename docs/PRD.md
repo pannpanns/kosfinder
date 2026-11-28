@@ -33,7 +33,7 @@
 **UI/UX:**
 - Navigasi 2 tab bawah besar (**Cari Kos**, **Kos Saya**) dan ikon Tentang di AppBar.
 - Ramah pemilik lansia: sedikit layar, teks >= 16 sp, tombol aksi utama >= 48 dp, bahasa Indonesia sehari-hari, label fasilitas utuh (Kamar Mandi Dalam, bukan KM), umpan balik jelas saat berhasil simpan atau validasi gagal.
-- **Form Kos:** Wajib: Nama Kos, Area, Alamat, Harga per bulan (> 0), Kamar tersedia (>= 0), No. HP/WA (hanya angka, 9 sampai 14 digit), **minimal 1 Fasilitas**. Opsional: Deskripsi singkat.
+- **Form Kos:** Wajib: Nama Kos, Area, Alamat, Harga per bulan (> 0), Kamar tersedia (>= 0), No. HP/WA (hanya angka, 9 sampai 14 digit), **minimal 1 Fasilitas** (4 fasilitas baku: AC, WiFi, Kamar Mandi Dalam, Parkir; pemilik boleh menambah maksimal 3 fasilitas tambahan, 2 sampai 20 karakter, tidak duplikat, dan dihitung ke syarat minimal 1 fasilitas). Opsional: Deskripsi singkat.
 - Di dekat isian nomor tampil catatan: "Nomor ini akan terlihat oleh pencari kos."
 
 **Technical dan database (ringkas):**
@@ -45,7 +45,7 @@
 **Aturan pencarian dan filter:**
 - Area: pencarian "mengandung", tidak peka huruf besar/kecil.
 - Harga: kos tampil jika harga <= harga maksimal.
-- Fasilitas: bila lebih dari satu dipilih, kos harus memiliki **semua** fasilitas yang dipilih.
+- Fasilitas: pencari menyaring dari 4 fasilitas baku saja; bila lebih dari satu dipilih, kos harus memiliki **semua** fasilitas yang dipilih.
 - Urutan daftar: kos terbaru lebih dulu.
 
 ## 5. Non-Functional Requirements (NFR)
@@ -96,6 +96,7 @@ Sebagai pemilik kos, saya ingin menambah, mengubah, dan menghapus kos milik saya
 - **US04-AC5 (Belum punya kos):** Given pemilik login tetapi belum punya kos, When membuka Kos Saya, Then tampil pesan "Anda belum memasang kos." dan tombol Tambah Kos.
 - **US04-AC6 (Pemilik lain ditolak):** Given kos X dimiliki Pemilik A, When Pemilik B mencoba mengubah atau menghapus kos X (lewat aplikasi maupun panggilan langsung API), Then backend (RLS) menolak permintaan dan data kos X tidak berubah.
 - **US04-AC7 (Tanpa login ditolak):** Given pengguna tidak login, When mencoba menambah, mengubah, atau menghapus kos lewat panggilan langsung API, Then backend menolak permintaan.
+- **US04-AC8 (Fasilitas tambahan):** Given pemilik berada di form Tambah atau Ubah Kos, When pemilik mengetuk "+ Tambah" dan mengisi nama fasilitas 2 sampai 20 karakter yang belum ada (maksimal 3 tambahan), Then fasilitas muncul sebagai chip terpilih dan tersimpan bersama data kos serta tampil pada kartu dan detail kos; jika duplikat, di luar 2 sampai 20 karakter, atau sudah 3 tambahan, tampil pesan kesalahan jelas.
 
 ### US05. Ketersediaan Kamar (Slice 5, Bonus)
 Sebagai pemilik kos, saya ingin mengubah jumlah kamar tersedia, agar pencari melihat sisa kamar atau status Penuh secara akurat.
