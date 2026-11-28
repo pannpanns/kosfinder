@@ -80,7 +80,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('2'), findsOneWidget);
-      expect(find.text('3'), findsOneWidget);
+      expect(find.text('3'), findsNWidgets(2));
       expect(find.text('1'), findsOneWidget);
       expect(find.text('Kos Melati'), findsOneWidget);
 

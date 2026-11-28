@@ -102,6 +102,27 @@ class _MyKosScreenState extends State<MyKosScreen> {
     }
   }
 
+  Future<void> _changeKamar(Kos kos, int nextKamar) async {
+    final ownerKos = context.read<OwnerKosProvider>();
+    final kosProvider = context.read<KosProvider>();
+    final ok = await ownerKos.updateKamar(kos.id, nextKamar);
+    if (!mounted) return;
+
+    if (ok) {
+      await kosProvider.loadKos();
+      if (!mounted) return;
+      _showMessage(
+        nextKamar == 0
+            ? 'Status kos diubah menjadi Penuh.'
+            : 'Kamar tersedia diperbarui menjadi $nextKamar.',
+      );
+    } else {
+      _showMessage(
+        ownerKos.errorMessage ?? 'Gagal memperbarui jumlah kamar.',
+      );
+    }
+  }
+
   void _showMessage(String text) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -275,45 +296,111 @@ class _MyKosScreenState extends State<MyKosScreen> {
   Widget _buildOwnerCard(Kos kos, bool isSubmitting) {
     return KosCard(
       kos: kos,
-      footer: Row(
+      footer: Column(
         children: [
-          Expanded(
-            child: SizedBox(
-              height: 48,
-              child: FilledButton.icon(
-                onPressed: isSubmitting
-                    ? null
-                    : () {
-                        final handler = widget.onEditTap;
-                        if (handler != null) {
-                          handler(kos);
-                          return;
-                        }
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => KosFormScreen(existingKos: kos),
-                          ),
-                        );
-                      },
-                icon: const Icon(Icons.edit_outlined, size: 18),
-                label: const Text('Ubah'),
-              ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Kamar tersedia', style: AppTextStyles.supporting),
+                Row(
+                  children: [
+                    Semantics(
+                      button: true,
+                      label: 'Kurangi kamar',
+                      child: IconButton(
+                        tooltip: 'Kurangi kamar',
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.surface,
+                          minimumSize: const Size(48, 48),
+                        ),
+                        onPressed: isSubmitting || kos.kamarTersedia <= 0
+                            ? null
+                            : () => _changeKamar(kos, kos.kamarTersedia - 1),
+                        icon: const Icon(Icons.remove, size: 20),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(
+                        kos.isPenuh ? 'Penuh' : '${kos.kamarTersedia}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: kos.isPenuh
+                              ? AppColors.dangerText
+                              : AppColors.ink,
+                        ),
+                      ),
+                    ),
+                    Semantics(
+                      button: true,
+                      label: 'Tambah kamar',
+                      child: IconButton(
+                        tooltip: 'Tambah kamar',
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.primaryTint,
+                          foregroundColor: AppColors.primaryDeep,
+                          minimumSize: const Size(48, 48),
+                        ),
+                        onPressed: isSubmitting
+                            ? null
+                            : () => _changeKamar(kos, kos.kamarTersedia + 1),
+                        icon: const Icon(Icons.add, size: 20),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: SizedBox(
-              height: 48,
-              child: FilledButton.icon(
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.dangerSoft,
-                  foregroundColor: AppColors.dangerText,
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 48,
+                  child: FilledButton.icon(
+                    onPressed: isSubmitting
+                        ? null
+                        : () {
+                            final handler = widget.onEditTap;
+                            if (handler != null) {
+                              handler(kos);
+                              return;
+                            }
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => KosFormScreen(existingKos: kos),
+                              ),
+                            );
+                          },
+                    icon: const Icon(Icons.edit_outlined, size: 18),
+                    label: const Text('Ubah'),
+                  ),
                 ),
-                onPressed: isSubmitting ? null : () => _confirmDelete(kos),
-                icon: const Icon(Icons.delete_outline, size: 18),
-                label: const Text('Hapus'),
               ),
-            ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: SizedBox(
+                  height: 48,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.dangerSoft,
+                      foregroundColor: AppColors.dangerText,
+                    ),
+                    onPressed: isSubmitting ? null : () => _confirmDelete(kos),
+                    icon: const Icon(Icons.delete_outline, size: 18),
+                    label: const Text('Hapus'),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

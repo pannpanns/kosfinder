@@ -56,6 +56,7 @@ class KosRepository {
     this.fetchByOwnerOverride,
     this.createOverride,
     this.updateOverride,
+    this.updateKamarOverride,
     this.deleteOverride,
     this.timeout = SupabaseConfig.requestTimeout,
   }) : _clientProvider = clientProvider ?? (() => SupabaseConfig.client);
@@ -74,6 +75,8 @@ class KosRepository {
     Map<String, dynamic> payload,
   )?
   updateOverride;
+  final Future<Map<String, dynamic>?> Function(String id, int kamarTersedia)?
+  updateKamarOverride;
   final Future<bool> Function(String id)? deleteOverride;
   final Duration timeout;
 
@@ -153,6 +156,41 @@ class KosRepository {
       }
       return Kos.fromJson(row);
     }, fallbackMessage: 'Gagal memperbarui data kos. Silakan coba lagi.');
+  }
+
+  Future<Kos> updateKamarTersedia({
+    required String id,
+    required int kamarTersedia,
+  }) async {
+    if (kamarTersedia < 0) {
+      throw const KosRepositoryException(
+        'Jumlah kamar tidak boleh kurang dari 0.',
+      );
+    }
+
+    return _guard(() async {
+      final override = updateKamarOverride;
+      final Map<String, dynamic>? row;
+      if (override != null) {
+        row = await override(id, kamarTersedia).timeout(timeout);
+      } else {
+        final raw = await _clientProvider()
+            .from('kos')
+            .update({'kamar_tersedia': kamarTersedia})
+            .eq('id', id)
+            .select()
+            .maybeSingle()
+            .timeout(timeout);
+        row = raw == null ? null : Map<String, dynamic>.from(raw);
+      }
+
+      if (row == null) {
+        throw const KosRepositoryException(
+          'Anda tidak memiliki izin untuk mengubah kamar kos ini.',
+        );
+      }
+      return Kos.fromJson(row);
+    }, fallbackMessage: 'Gagal memperbarui ketersediaan kamar. Silakan coba lagi.');
   }
 
   Future<void> deleteKos(String id) async {

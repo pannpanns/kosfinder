@@ -1,10 +1,12 @@
 import 'package:flutter/services.dart';
 import 'package:kosfinder/models/kos.dart';
+import 'package:kosfinder/providers/kos_provider.dart';
 import 'package:kosfinder/screens/about_screen.dart';
 import 'package:kosfinder/theme/app_theme.dart';
 import 'package:kosfinder/utils/kos_validator.dart';
 import 'package:kosfinder/widgets/kos_card.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class KosDetailScreen extends StatelessWidget {
@@ -64,8 +66,8 @@ class KosDetailScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _openWhatsApp(BuildContext context) async {
-    final ok = await _launch(whatsappUri(kos.kontak));
+  Future<void> _openWhatsApp(BuildContext context, String kontak) async {
+    final ok = await _launch(whatsappUri(kontak));
     if (!context.mounted || ok) return;
     _showMessage(
       context,
@@ -73,8 +75,8 @@ class KosDetailScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _openTelepon(BuildContext context) async {
-    final ok = await _launch(telUri(kos.kontak));
+  Future<void> _openTelepon(BuildContext context, String kontak) async {
+    final ok = await _launch(telUri(kontak));
     if (!context.mounted || ok) return;
     _showMessage(
       context,
@@ -82,8 +84,8 @@ class KosDetailScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _copyKontak(BuildContext context) async {
-    await Clipboard.setData(ClipboardData(text: kos.kontak));
+  Future<void> _copyKontak(BuildContext context, String kontak) async {
+    await Clipboard.setData(ClipboardData(text: kontak));
     if (!context.mounted) return;
     _showMessage(context, 'Nomor kontak disalin.');
   }
@@ -94,14 +96,31 @@ class KosDetailScreen extends StatelessWidget {
       ..showSnackBar(SnackBar(content: Text(text)));
   }
 
+  Kos _resolveLatestKos(BuildContext context) {
+    try {
+      final items = context.watch<KosProvider>().allItems;
+      for (final item in items) {
+        if (item.id == kos.id) {
+          return item;
+        }
+      }
+    } on ProviderNotFoundException {
+      // Layar ini dapat dirender mandiri di test tanpa KosProvider.
+    }
+    return kos;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isPenuh = kos.isPenuh;
+    final activeKos = _resolveLatestKos(context);
+    final isPenuh = activeKos.isPenuh;
     final heroBg = isPenuh ? AppColors.fullVisual : AppColors.primaryTint;
     final circle1 = isPenuh ? AppColors.fullCircle1 : AppColors.visualCircle1;
     final circle2 = isPenuh ? AppColors.fullCircle2 : AppColors.visualCircle2;
     final initialColor = isPenuh ? AppColors.muted : AppColors.primary;
-    final badgeText = isPenuh ? 'Penuh' : '${kos.kamarTersedia} kamar tersedia';
+    final badgeText = isPenuh
+        ? 'Penuh'
+        : '${activeKos.kamarTersedia} kamar tersedia';
     final badgeColor = isPenuh ? AppColors.dangerText : AppColors.primaryDeep;
 
     return Scaffold(
@@ -149,7 +168,7 @@ class KosDetailScreen extends StatelessWidget {
                           ),
                           Center(
                             child: Text(
-                              KosCard.initialFor(kos.nama),
+                              KosCard.initialFor(activeKos.nama),
                               style: TextStyle(
                                 fontSize: 100,
                                 fontWeight: FontWeight.w700,
@@ -219,7 +238,7 @@ class KosDetailScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(kos.nama, style: AppTextStyles.detailTitle),
+                        Text(activeKos.nama, style: AppTextStyles.detailTitle),
                         const SizedBox(height: 8),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,7 +254,7 @@ class KosDetailScreen extends StatelessWidget {
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
-                                formatFullAddress(kos),
+                                formatFullAddress(activeKos),
                                 style: AppTextStyles.supporting,
                               ),
                             ),
@@ -247,7 +266,7 @@ class KosDetailScreen extends StatelessWidget {
                           textBaseline: TextBaseline.alphabetic,
                           children: [
                             Text(
-                              KosValidator.formatRupiah(kos.harga),
+                              KosValidator.formatRupiah(activeKos.harga),
                               style: AppTextStyles.detailPrice,
                             ),
                             const SizedBox(width: 6),
@@ -265,14 +284,14 @@ class KosDetailScreen extends StatelessWidget {
                             Expanded(
                               child: _SummaryBox(
                                 label: 'Kamar',
-                                value: '${kos.kamarTersedia} sisa',
+                                value: '${activeKos.kamarTersedia} sisa',
                               ),
                             ),
                             const SizedBox(width: 10),
                             Expanded(
                               child: _SummaryBox(
                                 label: 'Fasilitas',
-                                value: '${kos.fasilitas.length} item',
+                                value: '${activeKos.fasilitas.length} item',
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -287,12 +306,12 @@ class KosDetailScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        if (kos.fasilitas.isNotEmpty) ...[
+                        if (activeKos.fasilitas.isNotEmpty) ...[
                           const SizedBox(height: 18),
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: kos.fasilitas
+                            children: activeKos.fasilitas
                                 .map(
                                   (item) => Container(
                                     padding: const EdgeInsets.symmetric(
@@ -316,9 +335,12 @@ class KosDetailScreen extends StatelessWidget {
                                 .toList(),
                           ),
                         ],
-                        if (kos.deskripsi.trim().isNotEmpty) ...[
+                        if (activeKos.deskripsi.trim().isNotEmpty) ...[
                           const SizedBox(height: 18),
-                          Text(kos.deskripsi.trim(), style: AppTextStyles.body),
+                          Text(
+                            activeKos.deskripsi.trim(),
+                            style: AppTextStyles.body,
+                          ),
                         ],
                       ],
                     ),
@@ -349,7 +371,7 @@ class KosDetailScreen extends StatelessWidget {
                           style: AppTextStyles.supporting,
                         ),
                         Text(
-                          formatPhoneDisplay(kos.kontak),
+                          formatPhoneDisplay(activeKos.kontak),
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
@@ -363,7 +385,8 @@ class KosDetailScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () => _openWhatsApp(context),
+                            onPressed: () =>
+                                _openWhatsApp(context, activeKos.kontak),
                             icon: const Icon(Icons.chat_bubble_outline, size: 20),
                             label: const Text('Buka WhatsApp'),
                           ),
@@ -372,13 +395,15 @@ class KosDetailScreen extends StatelessWidget {
                         _SquareActionButton(
                           icon: Icons.call_outlined,
                           semanticLabel: 'Telepon',
-                          onPressed: () => _openTelepon(context),
+                          onPressed: () =>
+                              _openTelepon(context, activeKos.kontak),
                         ),
                         const SizedBox(width: 10),
                         _SquareActionButton(
                           icon: Icons.copy_outlined,
                           semanticLabel: 'Salin nomor',
-                          onPressed: () => _copyKontak(context),
+                          onPressed: () =>
+                              _copyKontak(context, activeKos.kontak),
                         ),
                       ],
                     ),

@@ -119,6 +119,32 @@ class OwnerKosProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> updateKamar(String id, int kamarTersedia) async {
+    final normalized = kamarTersedia < 0 ? 0 : kamarTersedia;
+    _isSubmitting = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final updated = await _repository.updateKamarTersedia(
+        id: id,
+        kamarTersedia: normalized,
+      );
+      _items = _items.map((item) => item.id == id ? updated : item).toList();
+      return true;
+    } on KosRepositoryException catch (e) {
+      _errorMessage = e.message;
+      return false;
+    } catch (_) {
+      _errorMessage =
+          'Gagal memperbarui jumlah kamar. Periksa koneksi internet Anda.';
+      return false;
+    } finally {
+      _isSubmitting = false;
+      notifyListeners();
+    }
+  }
+
   void clear() {
     _items = const [];
     _isLoading = false;
