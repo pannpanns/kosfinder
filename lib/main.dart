@@ -1,6 +1,7 @@
 import 'package:kosfinder/config/supabase_config.dart';
 import 'package:kosfinder/providers/auth_provider.dart';
 import 'package:kosfinder/providers/kos_provider.dart';
+import 'package:kosfinder/providers/owner_kos_provider.dart';
 import 'package:kosfinder/repositories/auth_repository.dart';
 import 'package:kosfinder/repositories/kos_repository.dart';
 import 'package:kosfinder/screens/home_shell_screen.dart';
@@ -51,6 +52,9 @@ class KosFinderApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<AuthProvider>(
           create: (_) => AuthProvider(repository: authRepository),
+        ),
+        ChangeNotifierProvider<OwnerKosProvider>(
+          create: (_) => OwnerKosProvider(repository: kosRepository),
         ),
       ],
       child: MaterialApp(
